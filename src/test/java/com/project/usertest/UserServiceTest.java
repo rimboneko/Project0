@@ -34,11 +34,11 @@ public class UserServiceTest {
 		
 		@Test
 		public void testValidLogin() throws UserDoesNotExistException, InvalidCredentialsException {
-			User u1 = new User("testf", "testl", "testf@mail.com", "testu", "testp", "testt");
+			User u1 = new User("test", "user", "testf@mail.com", "testuser", "testpass", "testtype");
 			
 			when(uDao.getUserByUsername(anyString())).thenReturn(u1);
 			
-			User loggedIn = uServ.signIn("testu", "testp", "testt");
+			User loggedIn = uServ.signIn("testuser", "testpass", "testtype");
 			
 			assertEquals(u1.getUsername(), loggedIn.getUsername());
 		}
