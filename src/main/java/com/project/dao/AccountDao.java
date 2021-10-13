@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.project.models.Account;
+import com.project.models.Transactions;
 import com.project.models.User;
 
 public interface AccountDao {
@@ -22,6 +23,11 @@ public interface AccountDao {
 	
 	public double getBalance(String username) throws SQLException;
 	
+	public void setTransaction(String type, int acc, String status) throws SQLException;
+	
+	public List<Transactions> getTransactions();
+	
+	public void cancelAccount(int acc_id);
 	
 
 }

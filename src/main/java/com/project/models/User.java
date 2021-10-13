@@ -10,19 +10,29 @@ public class User implements Serializable {
 	private String username;
 	private String password;
 	private String email;
+	private String type;
 	
 	
 	public User() {
 		super();
 	}
 
-	public User(String firstName, String lastName, String username, String password, String email) {
+	public User(String firstName, String lastName, String username, String password, String email, String type) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
 		this.password = password;
 		this.email = email;
+		this.type = type;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getEmail() {
@@ -68,6 +78,6 @@ public class User implements Serializable {
 	@Override
 	public String toString() {
 		return "User [firstName=" + firstName + ", lastName=" + lastName + ", username=" + username + ", password="
-				+ password + ", email=" + email + "]";
+				+ password + ", email=" + email + ", type=" + type + "]";
 	}
 }

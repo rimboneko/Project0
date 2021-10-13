@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.project.logging.Logging;
 import com.project.models.User;
 import com.project.utils.ConnectionUtil;
 
@@ -34,7 +35,7 @@ public class UserDaoDB implements UserDao {
 				
 				//We have to loop through the ResultSet and create objects based off the return
 				while(rs.next()) {
-					userList.add(new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
+					userList.add(new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
 				}
 				
 				return userList;
@@ -65,6 +66,7 @@ public class UserDaoDB implements UserDao {
 					user.setUsername(rs.getString(3));
 					user.setPassword(rs.getString(4));
 					user.setEmail(rs.getString(5));
+					user.setType(rs.getString(6));
 				}
 				
 				return user;
@@ -83,8 +85,8 @@ public class UserDaoDB implements UserDao {
 			Connection con = conUtil.getConnection();
 			
 			//We will still create the sql string, but with some small changes
-			String sql = "INSERT INTO users(first_name, last_name, username, password, email) values"
-					+ "(?,?,?,?,?)";
+			String sql = "INSERT INTO users(first_name, last_name, username, password, email, type) values"
+					+ "(?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(sql);
 			
 			ps.setString(1, u.getFirstName());
@@ -92,8 +94,9 @@ public class UserDaoDB implements UserDao {
 			ps.setString(3, u.getUsername());
 			ps.setString(4, u.getPassword());
 			ps.setString(5, u.getEmail());
+			ps.setString(6, u.getType());
 			ps.execute();
-			
+			Logging.logger.info("User created");
 		}
 
 		@Override
@@ -101,7 +104,7 @@ public class UserDaoDB implements UserDao {
 			
 			try {
 				Connection con = conUtil.getConnection();
-				String sql = "UPDATE users SET first_name = ?, last_name = ?, username = ?, password = ?, email = ?"
+				String sql = "UPDATE users SET first_name = ?, last_name = ?, username = ?, password = ?, email = ?, type = ?"
 						+ "WHERE users.username = ?";
 				
 				PreparedStatement ps = con.prepareStatement(sql);
@@ -111,7 +114,9 @@ public class UserDaoDB implements UserDao {
 				ps.setString(3, u.getUsername());
 				ps.setString(4, u.getPassword());
 				ps.setString(5, u.getEmail());
-				ps.setString(6, u.getUsername());
+				ps.setString(6, u.getType());
+				ps.setString(7, u.getUsername());
+				Logging.logger.info("User updated");
 				
 			} catch(SQLException e) {
 				e.printStackTrace();
@@ -129,6 +134,7 @@ public class UserDaoDB implements UserDao {
 				PreparedStatement ps = con.prepareStatement(sql);
 				ps.setString(1, u.getUsername());
 				ps.execute();
+				Logging.logger.info("User deleted");
 			} catch(SQLException e) {
 				e.printStackTrace();
 			}

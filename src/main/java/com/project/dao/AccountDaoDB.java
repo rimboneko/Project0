@@ -8,7 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.project.logging.Logging;
 import com.project.models.Account;
+import com.project.models.Transactions;
 import com.project.models.User;
 import com.project.utils.ConnectionUtil;
 
@@ -27,7 +29,7 @@ public class AccountDaoDB implements AccountDao {
 		ps.setDouble(1, 0.0);
 		ps.setString(2, u.getUsername());
 		ps.execute();
-		
+		Logging.logger.info("New account created");
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class AccountDaoDB implements AccountDao {
 		
 		try {
 			Connection con = conUtil.getConnection();
-			String sql = "SELECT * FROM users WHERE users.username = '" + username + "'";
+			String sql = "SELECT * FROM accounts WHERE accounts.username = '" + username + "'";
 			Statement s = con.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			
@@ -89,6 +91,7 @@ public class AccountDaoDB implements AccountDao {
 		ps.setDouble(1, amount);
 		ps.setString(2, username);
 		ps.execute();
+		Logging.logger.info("withdrawing operation");
 	}
 
 	@Override
@@ -100,7 +103,7 @@ public class AccountDaoDB implements AccountDao {
 		ps.setDouble(1, amount);
 		ps.setString(2, username);
 		ps.execute();
-		
+		Logging.logger.info("deposit operation");
 	}
 
 	@Override
@@ -108,6 +111,7 @@ public class AccountDaoDB implements AccountDao {
 		
 		this.withdraw(amount, fusername);
 		this.deposit(amount, tusername);
+		Logging.logger.info("transfert operation");
 	}
 
 	@Override
@@ -121,6 +125,60 @@ public class AccountDaoDB implements AccountDao {
 		 balance = rs.getDouble(1);
 		}
 		return balance;
+	}
+
+	@Override
+	public void setTransaction(String type, int acc, String status) throws SQLException {
+		
+		Connection con = conUtil.getConnection();
+		String sql = "INSERT INTO transactions(transaction_type, transaction_acc, transaction_status) values"
+				+ "(?,?,?)";
+		PreparedStatement ps = con.prepareStatement(sql);
+		ps.setString(1, type);
+		ps.setInt(2, acc);
+		ps.setString(3, status);
+		ps.execute();
+	}
+
+	@Override
+	public List<Transactions> getTransactions() {
+		
+		List <Transactions> t = new ArrayList <Transactions>();
+		
+		try {
+			
+			Connection con = conUtil.getConnection();
+			String sql = "SELECT * FROM transactions";
+			Statement s = con.createStatement();
+			ResultSet rs = s.executeQuery(sql);
+				
+			while(rs.next()) {
+					
+				t.add(new Transactions(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4)));
+			}
+				
+			return t;	
+			
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+		return null;
+	}
+
+	@Override
+	public void cancelAccount(int acc_id) {
+		
+		Connection con = conUtil.getConnection();
+		String sql = "DELETE FROM accounts WHERE account_id = ?";
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, acc_id);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		Logging.logger.info("Account canceled");
 	}
 
 }
