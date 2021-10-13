@@ -1,5 +1,6 @@
 package com.project.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,24 +17,18 @@ public class UserDaoDB implements UserDao {
 		
 		ConnectionUtil conUtil = ConnectionUtil.getConnectionUtil();
 		
-		//Use Statements to talk to our database
 		@Override
 		public List<User> getAllUsers() {
 			
 			List<User> userList = new ArrayList<User>();
 			
 			try {
-				//Make the actual connection to the db
+				
 				Connection con = conUtil.getConnection();
-				
-				//Create a simple statement
 				String sql = "SELECT * FROM users";
-				
-				//We need to create a statement with the sql string
 				Statement s = con.createStatement();
 				ResultSet rs = s.executeQuery(sql);
-				
-				//We have to loop through the ResultSet and create objects based off the return
+		
 				while(rs.next()) {
 					userList.add(new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
 				}
@@ -77,14 +72,10 @@ public class UserDaoDB implements UserDao {
 			return null;
 		}
 
-		//We use prepared statements to precompile the sql query and protect against SQL Injection
-		
 		@Override
 		public void createUser(User u) throws SQLException {
 			
 			Connection con = conUtil.getConnection();
-			
-			//We will still create the sql string, but with some small changes
 			String sql = "INSERT INTO users(first_name, last_name, username, password, email, type) values"
 					+ "(?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(sql);
@@ -139,6 +130,28 @@ public class UserDaoDB implements UserDao {
 				e.printStackTrace();
 			}
 			
+			
+		}
+
+		@Override
+		public void updateUserType(String username, String type) {
+			try {
+				Connection con = conUtil.getConnection();
+				con.setAutoCommit(false);
+				String sql = "call update_type(?,?)";
+				CallableStatement cs = con.prepareCall(sql);
+				
+				cs.setString(1, username);
+				cs.setString(2, type);
+				
+				cs.execute();
+				
+				con.setAutoCommit(true);
+				Logging.logger.info("User updated");
+				
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
 			
 		}
 

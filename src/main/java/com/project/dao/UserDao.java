@@ -16,5 +16,7 @@ public interface UserDao {
 	void updateUser(User u);
 	
 	void deleteUser(User u);
+	
+	void updateUserType(String username, String type);
 
 }

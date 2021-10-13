@@ -72,7 +72,8 @@ public class ProjectDriver {
 					System.out.println("To Transfert press 5");
 					System.out.println("To Delete an Account press 6");
 					System.out.println("To View all Accounts press 7");
-					System.out.println("To Log out press 8");
+					System.out.println("To Update the Type of the User press 8");
+					System.out.println("To Log out press 9");
 					choice = in.next().charAt(0);
 					switch(choice) {
 					
@@ -80,7 +81,7 @@ public class ProjectDriver {
 						System.out.println("Invalid Entry, Please try again");
 						break;
 						
-					case '8':
+					case '9':
 						logout = true;
 						System.out.println("======================================");
 						Logging.logger.info("User loged out");
@@ -185,6 +186,15 @@ public class ProjectDriver {
 						
 					case '7':
 						System.out.println(aDao.getAllAccount());
+						System.out.println("======================================");
+						break;
+						
+					case '8':
+						System.out.println("Enter the username to update: ");
+						username = in.next();
+						System.out.println("Enter the new Type: ");
+						String type = in.next();
+						uDao.updateUserType(username, type);
 						System.out.println("======================================");
 						break;
 					}
